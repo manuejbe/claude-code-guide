@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Claude Code — Guía de herramientas</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #7c6af7;
+    --accent2: #4fc9c9;
+    --accent3: #f7a03a;
+    --accent4: #6fcf7c;
+    --text: #e8eaf0;
+    --muted: #8890ab;
+    --tag-bg: #2a2d45;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #22263a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+  }
+  header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.4rem; }
+  header h1 span { color: var(--accent); }
+  header p { color: var(--muted); font-size: 0.95rem; }
+  nav {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    justify-content: center;
+    padding: 1.2rem 2rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.82rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  nav a:hover { color: var(--text); border-color: var(--accent); background: var(--tag-bg); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  section { margin-bottom: 3rem; }
+  section h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .grid { display: grid; gap: 1rem; }
+  .grid-2 { grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 0.6rem; gap: 0.5rem;
+  }
+  .card h3 { font-size: 0.97rem; font-weight: 600; }
+  .card p { font-size: 0.87rem; color: var(--muted); margin-bottom: 0.6rem; }
+  .card .when {
+    font-size: 0.8rem;
+    color: var(--accent2);
+    background: rgba(79,201,201,0.08);
+    border-radius: 6px;
+    padding: 0.35rem 0.6rem;
+    border-left: 2px solid var(--accent2);
+  }
+  .card .when strong { color: var(--accent2); }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .tag-plugin { background: rgba(124,106,247,0.15); color: var(--accent); border: 1px solid rgba(124,106,247,0.3); }
+  .tag-skill  { background: rgba(111,207,124,0.12); color: var(--accent4); border: 1px solid rgba(111,207,124,0.25); }
+  .tag-mcp    { background: rgba(247,160,58,0.12);  color: var(--accent3); border: 1px solid rgba(247,160,58,0.25); }
+  .tag-hook   { background: rgba(79,201,201,0.1);   color: var(--accent2); border: 1px solid rgba(79,201,201,0.2); }
+  .tag-py     { background: rgba(247,160,58,0.1);   color: #f7c03a;        border: 1px solid rgba(247,160,58,0.2); }
+
+  .cmd {
+    display: inline-block;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    color: #c9d0e8;
+  }
+
+  .gsd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 0.7rem;
+  }
+  .gsd-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+  }
+  .gsd-card h4 { font-size: 0.83rem; font-weight: 600; margin-bottom: 0.3rem; color: var(--accent4); }
+  .gsd-card p  { font-size: 0.78rem; color: var(--muted); }
+
+  .hook-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+  .hook-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    display: flex; align-items: flex-start; gap: 0.8rem;
+  }
+  .hook-event {
+    font-size: 0.72rem; font-weight: 700;
+    padding: 0.2rem 0.5rem; border-radius: 4px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .hook-session  { background: rgba(124,106,247,0.2); color: var(--accent); }
+  .hook-pre      { background: rgba(247,100,100,0.15); color: #f77c7c; }
+  .hook-post     { background: rgba(79,201,201,0.15);  color: var(--accent2); }
+  .hook-item p   { font-size: 0.83rem; color: var(--muted); }
+  .hook-item strong { color: var(--text); }
+
+  .perms {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    padding: 1rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mi <span>Claude Code</span> — Guía de herramientas</h1>
+  <p>Todo lo que tenés instalado, para qué sirve y cuándo usarlo &nbsp;·&nbsp; Generado el 26 sep 2026</p>
+</header>
+
+<nav>
+  <a href="#plugins">Plugins</a>
+  <a href="#graphify">Graphify</a>
+  <a href="#gsd">Suite GSD</a>
+  <a href="#superpowers">Superpowers</a>
+  <a href="#mcp">MCP Servers</a>
+  <a href="#hooks">Hooks</a>
+  <a href="#permisos">Permisos</a>
+</nav>
+
+<main>
+
+  <!-- PLUGINS -->
+  <section id="plugins">
+    <h2><span class="dot" style="background:#7c6af7"></span>Plugins instalados</h2>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-header">
+          <h3>superpowers</h3>
+          <span class="tag tag-plugin">v6.4.1</span>
+        </div>
+        <p>El plugin central que habilita todo el ecosistema de skills avanzados: metodologías de desarrollo, debugging sistemático, brainstorming, code review, ejecución de planes y más. Sin este plugin, los demás skills de proceso no funcionan.</p>
+        <div class="when"><strong>Cuándo:</strong> Siempre activo en background. Se activa automáticamente con los <span class="cmd">/skills</span> de superpowers.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>frontend-design</h3>
+          <span class="tag tag-plugin">oficial</span>
+        </div>
+        <p>Skill especializado en diseño de interfaces de usuario. Genera diseños distintivos y de producción con guías de estilo, componentes, layouts y decisiones visuales fundamentadas.</p>
+        <div class="when"><strong>Cuándo:</strong> Antes de construir cualquier UI — ejecutá <span class="cmd">/frontend-design</span> para obtener un contrato de diseño antes de codear.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>ponytail</h3>
+          <span class="tag tag-plugin">v4.10.0</span>
+        </div>
+        <p>Fuerza la solución más simple posible. Audita código en busca de sobre-ingeniería, abstracción prematura y complejidad innecesaria. Tiene 6 sub-skills: <span class="cmd">/ponytail</span>, <span class="cmd">/ponytail-audit</span>, <span class="cmd">/ponytail-review</span>, <span class="cmd">/ponytail-debt</span>, <span class="cmd">/ponytail-gain</span>, <span class="cmd">/ponytail-help</span>.</p>
+        <div class="when"><strong>Cuándo:</strong> Cuando el código se está complicando, después de una implementación grande, o antes de un PR. <span class="cmd">/ponytail-audit</span> para auditar todo el repo.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GRAPHIFY -->
+  <section id="graphify">
+    <h2><span class="dot" style="background:#f7a03a"></span>Graphify</h2>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-header">
+          <h3>graphifyy (Python)</h3>
+          <span class="tag tag-py">v0.9.69</span>
+        </div>
+        <p>Convierte cualquier carpeta de código, docs, papers, imágenes o videos en un <strong>grafo de conocimiento navegable</strong>. Genera visualización HTML interactiva, JSON para GraphRAG, y un reporte en lenguaje natural. Detecta comunidades y conexiones no obvias entre archivos.</p>
+        <div class="when"><strong>Cuándo:</strong> Para entender arquitectura de un proyecto desconocido, mapear dependencias, o consultar relaciones entre módulos.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Comandos clave</h3>
+          <span class="tag tag-skill">skill</span>
+        </div>
+        <p style="margin-bottom:0.8rem">Invocá con <span class="cmd">/graphify</span> o con los comandos CLI:</p>
+        <div style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.82rem;color:var(--muted)">
+          <div><span class="cmd">graphify .</span> — grafo del proyecto actual</div>
+          <div><span class="cmd">graphify &lt;ruta&gt;</span> — grafo de una carpeta específica</div>
+          <div><span class="cmd">graphify https://github.com/...</span> — clonar y graficar un repo</div>
+          <div><span class="cmd">graphify query "¿cómo funciona X?"</span> — consulta en lenguaje natural</div>
+          <div><span class="cmd">graphify explain "NombreClase"</span> — explicación de un nodo</div>
+          <div><span class="cmd">graphify path "ModuloA" "ModuloB"</span> — camino más corto entre dos conceptos</div>
+          <div><span class="cmd">graphify &lt;ruta&gt; --update</span> — actualización incremental</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GSD -->
+  <section id="gsd">
+    <h2><span class="dot" style="background:#6fcf7c"></span>Suite GSD (Get Shit Done)</h2>
+    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.2rem">Sistema completo de gestión de proyectos integrado en Claude Code. Maneja todo el ciclo: idea → roadmap → fases → planificación → ejecución → verificación.</p>
+
+    <div class="gsd-grid">
+
+      <div class="gsd-card">
+        <h4>Nuevo proyecto</h4>
+        <p><span class="cmd">/gsd-new-project</span> — inicializar con roadmap, research y fases desde cero.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Avanzar al siguiente paso</h4>
+        <p><span class="cmd">/gsd-next</span> — detecta qué viene y avanza automáticamente.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Planificar una fase</h4>
+        <p><span class="cmd">/gsd-plan-phase</span> — crea un plan detallado con tareas y dependencias.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Ejecutar una fase</h4>
+        <p><span class="cmd">/gsd-execute-phase</span> — ejecuta todos los planes con commits atómicos.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Debug sistemático</h4>
+        <p><span class="cmd">/gsd-debug</span> — debugging con método científico, checkpoints y sesiones.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Code review</h4>
+        <p><span class="cmd">/gsd-code-review</span> + <span class="cmd">/gsd-code-review-fix</span> — revisar y auto-corregir código.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Verificar trabajo</h4>
+        <p><span class="cmd">/gsd-verify-work</span> — valida que lo construido cumple los objetivos.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Shipear</h4>
+        <p><span class="cmd">/gsd-ship</span> — crea PR, corre review y prepara el merge.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Salud del proyecto</h4>
+        <p><span class="cmd">/gsd-health</span> — diagnostica el directorio de planificación.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Progreso</h4>
+        <p><span class="cmd">/gsd-progress</span> — estado actual, fases completadas y pendientes.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Notas rápidas</h4>
+        <p><span class="cmd">/gsd-note</span> — captura ideas sin fricción. <span class="cmd">/gsd-add-todo</span> — agrega tarea.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Backlog</h4>
+        <p><span class="cmd">/gsd-add-backlog</span> / <span class="cmd">/gsd-review-backlog</span> — gestionar ideas futuras.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Pausar / Retomar</h4>
+        <p><span class="cmd">/gsd-pause-work</span> / <span class="cmd">/gsd-resume-work</span> — handoff de contexto entre sesiones.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Seguridad</h4>
+        <p><span class="cmd">/gsd-secure-phase</span> — verifica amenazas y mitigaciones implementadas.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>UI/AI phases</h4>
+        <p><span class="cmd">/gsd-ui-phase</span> / <span class="cmd">/gsd-ai-integration-phase</span> — contratos de diseño especializados.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Tareas autónomas</h4>
+        <p><span class="cmd">/gsd-autonomous</span> — ejecuta todas las fases restantes automáticamente.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Mapa del código</h4>
+        <p><span class="cmd">/gsd-map-codebase</span> — análisis paralelo de arquitectura, tech, calidad.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Agregar tests</h4>
+        <p><span class="cmd">/gsd-add-tests</span> — genera tests para código completado.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Rollback seguro</h4>
+        <p><span class="cmd">/gsd-undo</span> — revierte git de forma segura.</p>
+      </div>
+
+      <div class="gsd-card">
+        <h4>Documentación</h4>
+        <p><span class="cmd">/gsd-docs-update</span> — genera o actualiza docs del proyecto.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SUPERPOWERS -->
+  <section id="superpowers">
+    <h2><span class="dot" style="background:#7c6af7"></span>Superpowers — Skills de proceso</h2>
+    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.2rem">Metodologías que Claude aplica <em>antes</em> de actuar. Definen el cómo, no el qué. Se activan automáticamente según el contexto.</p>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-header"><h3>brainstorming</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Exploración estructurada de opciones antes de implementar. <strong>Obligatorio antes de cualquier tarea de construcción.</strong></p>
+        <div class="when"><strong>Cuándo:</strong> "Construyamos X", cualquier feature nueva, decisiones de arquitectura.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>systematic-debugging</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Debugging con método científico: hipótesis, pruebas, aislamiento. Evita el debugging por intuición.</p>
+        <div class="when"><strong>Cuándo:</strong> Ante cualquier bug o comportamiento inesperado. Siempre antes de tocar código.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>executing-plans</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Metodología para ejecutar planes de implementación con checkpoints, commits atómicos y manejo de desvíos.</p>
+        <div class="when"><strong>Cuándo:</strong> Al ejecutar un plan ya diseñado.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>writing-plans</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Estructura para crear planes de implementación de alta calidad antes de ejecutar.</p>
+        <div class="when"><strong>Cuándo:</strong> Cuando tenés una spec y necesitás planificar la ejecución.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>requesting-code-review</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Prepara y estructura un code review correcto antes de pedirlo.</p>
+        <div class="when"><strong>Cuándo:</strong> Al completar una tarea, antes de hacer merge.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>receiving-code-review</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Cómo procesar y aplicar feedback de code review de forma efectiva.</p>
+        <div class="when"><strong>Cuándo:</strong> Cuando recibís un review con cambios solicitados.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>verification-before-completion</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Checklist de verificación antes de declarar una tarea como completa. Previene falsos "done".</p>
+        <div class="when"><strong>Cuándo:</strong> Siempre antes de reportar trabajo como terminado.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>test-driven-development</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Flujo TDD: tests primero, luego implementación. Mantiene cobertura y diseño limpio.</p>
+        <div class="when"><strong>Cuándo:</strong> Al implementar cualquier funcionalidad nueva.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>subagent-driven-development</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Delegar implementación a sub-agentes especializados para tareas grandes o paralelas.</p>
+        <div class="when"><strong>Cuándo:</strong> Tareas de implementación complejas que se pueden paralelizar.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>using-git-worktrees</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Usar git worktrees para trabajar en features en ramas aisladas sin afectar el árbol principal.</p>
+        <div class="when"><strong>Cuándo:</strong> Al comenzar una feature branch nueva.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>finishing-a-development-branch</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Pasos para cerrar correctamente una rama de desarrollo antes del merge.</p>
+        <div class="when"><strong>Cuándo:</strong> Cuando la implementación está lista para integrar.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>dispatching-parallel-agents</h3><span class="tag tag-skill">proceso</span></div>
+        <p>Estrategia para lanzar múltiples agentes en paralelo cuando hay tareas independientes.</p>
+        <div class="when"><strong>Cuándo:</strong> Ante 2+ tareas independientes simultáneas.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MCP -->
+  <section id="mcp">
+    <h2><span class="dot" style="background:#f7a03a"></span>MCP Servers — Integraciones</h2>
+    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.2rem">Servidores de contexto que extienden las capacidades de Claude con servicios externos. Activos en esta sesión.</p>
+    <div class="grid grid-3">
+
+      <div class="card">
+        <div class="card-header"><h3>Gmail</h3><span class="tag tag-mcp">MCP</span></div>
+        <p>Leer, escribir, enviar, organizar y buscar emails. Crear borradores, etiquetar, responder hilos.</p>
+        <div class="when"><strong>Cuándo:</strong> "Buscame emails de X", "redactá una respuesta a...", "creá un borrador".</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Google Calendar</h3><span class="tag tag-mcp">MCP</span></div>
+        <p>Crear, ver, actualizar y eliminar eventos. Buscar disponibilidad horaria y sugerir horarios.</p>
+        <div class="when"><strong>Cuándo:</strong> "Agendame X", "qué tengo mañana", "creá un evento para...".</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Google Drive</h3><span class="tag tag-mcp">MCP</span></div>
+        <p>Buscar, leer, crear, copiar, compartir y gestionar archivos en Drive.</p>
+        <div class="when"><strong>Cuándo:</strong> "Encontrá el archivo X", "creá una carpeta", "compartí este doc".</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Google Docs</h3><span class="tag tag-mcp">MCP</span></div>
+        <p>Leer y editar documentos de Google Docs directamente.</p>
+        <div class="when"><strong>Cuándo:</strong> "Leé el doc X", "agregá una sección sobre Y al doc".</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Claude Docs</h3><span class="tag tag-mcp">MCP</span></div>
+        <p>Crear y editar documentos vivos en claude.ai. Permite documentos colaborativos con bloques, tablas, gráficos y tabs.</p>
+        <div class="when"><strong>Cuándo:</strong> "Creame un doc con...", análisis que conviene dejar documentados.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Canva</h3><span class="tag tag-mcp">MCP</span></div>
+        <p>Crear, editar, exportar y gestionar diseños en Canva. Generar imágenes, templates, presentaciones.</p>
+        <div class="when"><strong>Cuándo:</strong> "Creá un banner", "diseñá una presentación", "generá una imagen de...".</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Spotify</h3><span class="tag tag-mcp">MCP</span></div>
+        <p>Buscar música, generar playlists, ver qué está sonando, guardar y eliminar de la biblioteca.</p>
+        <div class="when"><strong>Cuándo:</strong> "Creame una playlist de...", "qué está sonando", "buscá canciones de X".</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>IDE (executeCode / getDiagnostics)</h3><span class="tag tag-mcp">MCP</span></div>
+        <p>Ejecutar código directamente en el IDE y obtener diagnósticos (errores, warnings) del editor activo.</p>
+        <div class="when"><strong>Cuándo:</strong> Automático cuando Claude necesita ejecutar código o verificar errores en el editor.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HOOKS -->
+  <section id="hooks">
+    <h2><span class="dot" style="background:#4fc9c9"></span>Hooks — Automatizaciones</h2>
+    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.2rem">Scripts que se ejecutan automáticamente en respuesta a eventos de Claude Code. No requieren intervención.</p>
+    <ul class="hook-list">
+
+      <li class="hook-item">
+        <span class="hook-event hook-session">SessionStart</span>
+        <p><strong>Chequeo de actualizaciones GSD</strong> — verifica si hay nuevas versiones de la suite GSD al iniciar cada sesión.</p>
+      </li>
+
+      <li class="hook-item">
+        <span class="hook-event hook-session">SessionStart</span>
+        <p><strong>Estado de sesión GSD</strong> — carga el contexto de la sesión anterior, fases activas y estado del proyecto.</p>
+      </li>
+
+      <li class="hook-item">
+        <span class="hook-event hook-pre">PreToolUse · Write/Edit</span>
+        <p><strong>prompt-guard</strong> — detecta posibles intentos de prompt injection en archivos antes de escribir.</p>
+      </li>
+
+      <li class="hook-item">
+        <span class="hook-event hook-pre">PreToolUse · Write/Edit</span>
+        <p><strong>read-guard</strong> — verifica que el archivo a modificar fue leído previamente (evita escrituras a ciegas).</p>
+      </li>
+
+      <li class="hook-item">
+        <span class="hook-event hook-pre">PreToolUse · Write/Edit</span>
+        <p><strong>workflow-guard</strong> — asegura que las ediciones respetan el flujo GSD activo (no saltear fases).</p>
+      </li>
+
+      <li class="hook-item">
+        <span class="hook-event hook-pre">PreToolUse · Bash</span>
+        <p><strong>validate-commit</strong> — valida que los commits cumplen las convenciones antes de ejecutar <span class="cmd">git commit</span>.</p>
+      </li>
+
+      <li class="hook-item">
+        <span class="hook-event hook-post">PostToolUse · Bash/Edit/Write/Agent</span>
+        <p><strong>context-monitor</strong> — monitorea el uso de contexto y avisa cuando se acerca al límite.</p>
+      </li>
+
+      <li class="hook-item">
+        <span class="hook-event hook-post">PostToolUse · Read</span>
+        <p><strong>read-injection-scanner</strong> — escanea el contenido leído en busca de prompt injection antes de procesarlo.</p>
+      </li>
+
+      <li class="hook-item">
+        <span class="hook-event hook-post">PostToolUse · Write/Edit</span>
+        <p><strong>phase-boundary</strong> — detecta si una escritura cruzó el límite de una fase GSD y actualiza el estado.</p>
+      </li>
+
+    </ul>
+  </section>
+
+  <!-- PERMISOS -->
+  <section id="permisos">
+    <h2><span class="dot" style="background:#f7a03a"></span>Permisos pre-aprobados</h2>
+    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1rem">Comandos que Claude puede ejecutar sin pedirte confirmación cada vez:</p>
+    <div class="perms">
+      <span class="cmd">winget --version</span>
+      <span class="cmd">scoop --version</span>
+      <span class="cmd">choco --version</span>
+      <span class="cmd">where claude *</span>
+      <span class="cmd">git clone *</span>
+      <span class="cmd">code .</span>
+      <span class="cmd">node *</span>
+      <span class="cmd">git add *</span>
+      <span class="cmd">git commit *</span>
+      <span class="cmd">git push *</span>
+      <span class="cmd">WebSearch</span>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Generado por Claude Code · Sonnet 4.6 · Actualizar con <span class="cmd">/gsd-update</span> y regenerar esta página cuando instales algo nuevo.
+</footer>
+
+</body>
+</html>
